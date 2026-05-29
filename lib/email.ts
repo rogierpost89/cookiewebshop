@@ -23,12 +23,15 @@ export async function sendNewOrderEmail(order: Order): Promise<void> {
   }
 }
 
-export async function sendOrderConfirmationEmail(order: Order): Promise<void> {
+export async function sendOrderConfirmationEmail(
+  order: Order,
+  previewPng?: string | null
+): Promise<void> {
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: order.customerEmail,
     subject: orderConfirmationSubject,
-    react: OrderConfirmationEmail({ order }),
+    react: OrderConfirmationEmail({ order, previewPng }),
   });
   if (error) {
     throw new Error(`Resend error: ${error.message}`);

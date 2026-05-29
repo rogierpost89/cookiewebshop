@@ -1,8 +1,9 @@
-import { Html, Head, Body, Section, Text, Heading, Hr } from "@react-email/components";
+import { Html, Head, Body, Section, Text, Heading, Hr, Img } from "@react-email/components";
 import { Order } from "@prisma/client";
 
 interface OrderConfirmationEmailProps {
   order: Order;
+  previewPng?: string | null;
 }
 
 const formatDate = (date: Date) =>
@@ -13,7 +14,7 @@ const deliveryMethodLabel = (method: string) =>
 
 export const orderConfirmationSubject = "Bevestiging van je bestelling";
 
-export default function OrderConfirmationEmail({ order }: OrderConfirmationEmailProps) {
+export default function OrderConfirmationEmail({ order, previewPng }: OrderConfirmationEmailProps) {
   return (
     <Html lang="nl">
       <Head />
@@ -26,6 +27,22 @@ export default function OrderConfirmationEmail({ order }: OrderConfirmationEmail
             Hoi {order.customerName}, we hebben je bestelling ontvangen en gaan er zo snel mogelijk mee aan de slag.
           </Text>
 
+          {previewPng && (
+            <>
+              <Hr style={{ borderColor: "#eeeeee", margin: "24px 0" }} />
+              <Heading as="h2" style={{ color: "#333333", fontSize: "18px", marginBottom: "12px" }}>
+                Jouw koekje preview
+              </Heading>
+              <Img
+                src={previewPng}
+                width={200}
+                height={200}
+                alt="Preview van jouw gepersonaliseerde koekje"
+                style={{ display: "block", margin: "0 auto" }}
+              />
+            </>
+          )}
+
           <Hr style={{ borderColor: "#eeeeee", margin: "24px 0" }} />
 
           <Heading as="h2" style={{ color: "#333333", fontSize: "18px", marginBottom: "16px" }}>
@@ -37,6 +54,16 @@ export default function OrderConfirmationEmail({ order }: OrderConfirmationEmail
           <Text style={{ color: "#333333", fontSize: "15px", margin: "4px 0" }}>
             <strong>Kleur:</strong> {order.cookieColor}
           </Text>
+          {order.personalizationLine1 && (
+            <Text style={{ color: "#333333", fontSize: "15px", margin: "4px 0" }}>
+              <strong>Tekst regel 1:</strong> {order.personalizationLine1}
+            </Text>
+          )}
+          {order.personalizationLine2 && (
+            <Text style={{ color: "#333333", fontSize: "15px", margin: "4px 0" }}>
+              <strong>Tekst regel 2:</strong> {order.personalizationLine2}
+            </Text>
+          )}
           <Text style={{ color: "#333333", fontSize: "15px", margin: "4px 0" }}>
             <strong>Aantal:</strong> {order.quantity}
           </Text>

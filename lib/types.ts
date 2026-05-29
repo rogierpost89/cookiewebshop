@@ -21,13 +21,17 @@ export const ORDER_STATUSES = ["pending", "confirmed", "ready", "delivered"] as 
 
 export const CreateOrderSchema = z
   .object({
-    cookieName: z.string().min(1).max(30),
+    customerName: z.string().min(1).max(100),
+    customerEmail: z.string().email(),
+    cookieName: z.string().min(1).max(50),
     cookieColor: z.enum(["pink", "white", "blue", "yellow"]),
     quantity: z.number().int().min(1).max(500),
     deliveryMethod: z.enum(["pickup", "delivery"]),
     deadline: z.coerce.date(),
     shippingAddress: z.string().min(1).optional(),
     notes: z.string().optional(),
+    personalizationLine1: z.string().max(22).optional(),
+    personalizationLine2: z.string().max(14).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.deliveryMethod === "delivery" && !data.shippingAddress) {

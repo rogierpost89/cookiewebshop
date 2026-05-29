@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model Order {
@@ -22,5 +22,7 @@ model Order {
   shippingAddress String?
   status          String    @default("pending")
   readyDate       DateTime?
-  notes           String?
+  notes                String?
+  personalizationLine1 String?
+  personalizationLine2 String?
 }

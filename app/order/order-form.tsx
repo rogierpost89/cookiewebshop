@@ -6,9 +6,9 @@ import { createOrder } from '@/app/actions'
 import CookiePreview from './CookiePreview'
 
 const COOKIE_TYPES = [
-  { id: 'butter', name: 'Classic Butter', price: 18 },
-  { id: 'chocolate', name: 'Chocolate Dip', price: 22 },
-  { id: 'royal', name: 'Royal Iced', price: 28 },
+  { id: 'blossom', name: 'Blossom',  price: 28, defaultColor: 'pink'  },
+  { id: 'azuur',   name: 'Azuur',    price: 28, defaultColor: 'blue'  },
+  { id: 'ivoor',   name: 'Ivoor',    price: 28, defaultColor: 'white' },
 ]
 
 const COLOR_SWATCHES = [
@@ -38,12 +38,12 @@ interface OrderFormProps {
 export default function OrderForm({ initialType = '' }: OrderFormProps) {
   const [error, formAction, pending] = useActionState(createOrder, null)
   const [delivery, setDelivery] = useState<'pickup' | 'delivery'>('pickup')
-  const [color, setColor] = useState('white')
+  const matchedType = COOKIE_TYPES.find((c) => c.id === initialType) ?? COOKIE_TYPES[0]
+  const [color, setColor] = useState(matchedType.defaultColor)
   const [line1, setLine1] = useState('')
   const [line2, setLine2] = useState('')
 
-  const defaultName =
-    COOKIE_TYPES.find((c) => c.id === initialType)?.name ?? COOKIE_TYPES[0].name
+  const defaultName = matchedType.name
 
   return (
     <div className="min-h-full">
@@ -53,7 +53,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
             ← Terug
           </Link>
           <span className="text-bisque">|</span>
-          <span className="font-serif text-xl text-primary">Cookie Atelier</span>
+          <span className="font-serif text-xl text-primary">Daphne's Bakery</span>
         </div>
       </header>
 
@@ -232,7 +232,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
                       {method === 'pickup' ? 'Afhalen' : 'Bezorgen'}
                     </p>
                     <p className="font-sans text-xs text-taupe mt-1">
-                      {method === 'pickup' ? 'Gratis · Amsterdam' : '€4,50 bezorgkosten'}
+                      {method === 'pickup' ? 'Gratis · Huizen' : '€4,50 bezorgkosten'}
                     </p>
                   </div>
                 </label>

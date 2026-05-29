@@ -21,7 +21,7 @@ const cutiveMono = Cutive_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cookie Atelier",
+  title: "Daphne's Bakery",
   description: "Handmade cookies, baked to order.",
 };
 

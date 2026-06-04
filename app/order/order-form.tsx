@@ -185,7 +185,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
                       value={line2}
                       onChange={(e) => setLine2(e.target.value)}
                       maxLength={22}
-                      placeholder="Bv. 4 jaar 🎉"
+                      placeholder="Bv. 4 jaar"
                       className="w-full border border-bisque bg-surface px-4 py-3 font-mono text-sm text-espresso focus:outline-none focus:border-primary"
                       style={{ fontFamily: 'var(--font-cutive-mono), monospace' }}
                     />

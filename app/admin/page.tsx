@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { db } from '@/lib/db'
 import { logoutAction } from './logout/actions'
 
+export const dynamic = 'force-dynamic'
+
 const STATUS_LABELS: Record<string, string> = {
   pending:   'In afwachting',
   confirmed: 'Bevestigd',

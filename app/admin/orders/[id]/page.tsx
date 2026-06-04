@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import UpdateOrderForm from './UpdateOrderForm'
 
+export const dynamic = 'force-dynamic'
+
 const COLOR_LABELS: Record<string, string> = {
   pink:   'Roze',
   white:  'Wit',

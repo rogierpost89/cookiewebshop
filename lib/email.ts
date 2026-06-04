@@ -7,16 +7,17 @@ import NewOrderEmail, { newOrderSubject } from '@/emails/new-order';
 import OrderConfirmationEmail, { orderConfirmationSubject } from '@/emails/order-confirmation';
 import ReadyDateEmail, { readyDateSubject } from '@/emails/ready-date';
 
-if (!process.env.RESEND_FROM && process.env.NODE_ENV === 'production') {
-  throw new Error('RESEND_FROM environment variable is not set in production')
-}
 const FROM_ADDRESS = process.env.RESEND_FROM ?? 'onboarding@resend.dev';
 const DEFAULT_BAKER_EMAIL = process.env.BAKER_EMAIL ?? 'baker@example.com';
 const REPLY_TO = process.env.REPLY_TO_EMAIL ?? 'daphnevrd@outlook.com';
 const BCC = process.env.BCC_EMAIL ?? '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY ?? '';
 
-const resend = new Resend(RESEND_API_KEY);
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(RESEND_API_KEY);
+  return _resend;
+}
 
 export async function sendNewOrderEmail(order: Order): Promise<void> {
   if (!RESEND_API_KEY) {
@@ -29,7 +30,7 @@ export async function sendNewOrderEmail(order: Order): Promise<void> {
   }
 
   const html = await render(NewOrderEmail({ order }));
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM_ADDRESS,
     to: DEFAULT_BAKER_EMAIL,
     ...(BCC && { bcc: BCC }),
@@ -55,7 +56,7 @@ export async function sendOrderConfirmationEmail(
   }
 
   const html = await render(OrderConfirmationEmail({ order, previewPng }));
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM_ADDRESS,
     to: order.customerEmail,
     replyTo: REPLY_TO,
@@ -83,7 +84,7 @@ export async function sendReadyDateEmail(order: Order): Promise<void> {
   }
   const orderWithReadyDate = order as Order & { readyDate: Date };
   const html = await render(ReadyDateEmail({ order: orderWithReadyDate }));
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM_ADDRESS,
     to: order.customerEmail,
     replyTo: REPLY_TO,

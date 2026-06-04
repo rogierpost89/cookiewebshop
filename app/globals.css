@@ -1,0 +1,75 @@
+@import "tailwindcss";
+@source "../app/**/*.{ts,tsx}";
+@source "../lib/**/*.{ts,tsx}";
+
+@theme inline {
+  --font-sans: var(--font-lato);
+  --font-serif: var(--font-cormorant);
+  --font-mono: var(--font-cutive-mono);
+
+  /* Brand palette — extracted from cookie photos */
+  --color-primary:   #C46480;
+  --color-accent:    #8CC4D0;
+  --color-parchment: #FBF9F7;
+  --color-espresso:  #2A1E22;
+  --color-taupe:     #8A7A82;
+  --color-bisque:    #F0DDE5;
+  --color-surface:   #FDFBFB;
+}
+
+:root {
+  --gradient:   linear-gradient(135deg, #C46480, #b87090, #6AAEC0);
+  --gradient-h: linear-gradient(90deg, #C46480, #E0A0B8, #F5D8E5, #8CC4D0);
+  --hero-bg:    linear-gradient(150deg, #fce8f0 0%, #fdf4f8 35%, #f0eef8 65%, #eaf4f8 100%);
+}
+
+/* Slider */
+input[type="range"].slider-pink {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  border-radius: 1px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].slider-pink::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-image: url('/cookies/pinkcookienoname.png');
+  background-size: cover;
+  background-position: center;
+  background-color: transparent;
+  border: 2px solid white;
+  box-shadow: 0 3px 12px rgba(196,100,128,0.3);
+  cursor: grab;
+}
+input[type="range"].slider-pink::-moz-range-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-image: url('/cookies/pinkcookienoname.png');
+  background-size: cover;
+  background-position: center;
+  background-color: transparent;
+  border: 2px solid white;
+  box-shadow: 0 3px 12px rgba(196,100,128,0.3);
+  cursor: grab;
+}
+
+body {
+  background: linear-gradient(135deg, #fce4ed 0%, #fdf4f8 30%, #f4eef8 60%, #e8f2fc 100%);
+  background-size: 100% 100%;
+  color: #2A1E22;
+  min-height: 100vh;
+}
+
+@keyframes rock-lr {
+  0%, 100% { transform: perspective(900px) rotateY(-6deg); }
+  50%      { transform: perspective(900px) rotateY(6deg); }
+}
+
+.animate-spin-slow {
+  animation: rock-lr 14s ease-in-out infinite;
+}

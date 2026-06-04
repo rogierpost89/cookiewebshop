@@ -23,6 +23,12 @@ function minDeadlineDate() {
   return d.toISOString().split('T')[0]
 }
 
+function defaultDeadlineDate() {
+  const d = new Date()
+  d.setDate(d.getDate() + 14)
+  return d.toISOString().split('T')[0]
+}
+
 interface OrderFormProps {
   initialType?: string
 }
@@ -149,7 +155,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
                       value={line1}
                       onChange={(e) => setLine1(e.target.value)}
                       maxLength={14}
-                      placeholder="Bv. Dawson"
+                      placeholder="Bv. Emma"
                       className="w-full border border-bisque bg-surface px-4 py-3 font-mono text-sm text-espresso focus:outline-none focus:border-primary"
                       style={{ fontFamily: 'var(--font-cutive-mono), monospace' }}
                     />
@@ -169,7 +175,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
                       value={line2}
                       onChange={(e) => setLine2(e.target.value)}
                       maxLength={22}
-                      placeholder="Bv. Mr &amp; Mrs"
+                      placeholder="Bv. 4 jaar 🎉"
                       className="w-full border border-bisque bg-surface px-4 py-3 font-mono text-sm text-espresso focus:outline-none focus:border-primary"
                       style={{ fontFamily: 'var(--font-cutive-mono), monospace' }}
                     />
@@ -216,6 +222,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
                 type="date"
                 name="deadline"
                 min={minDeadlineDate()}
+                defaultValue={defaultDeadlineDate()}
                 className="w-full border border-bisque bg-surface px-4 py-3 font-sans text-sm text-espresso focus:outline-none focus:border-primary"
               />
             </div>

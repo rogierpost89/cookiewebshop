@@ -28,7 +28,7 @@ export async function PATCH(
 
   const existing = await db.order.findUnique({ where: { id } })
   if (!existing) {
-    return NextResponse.json({ success: false }, { status: 404 })
+    return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 })
   }
 
   try {
@@ -50,7 +50,8 @@ export async function PATCH(
     }
 
     return NextResponse.json({ success: true, order })
-  } catch {
-    return NextResponse.json({ success: false }, { status: 500 })
+  } catch (err) {
+    console.error('[orders] update failed:', err)
+    return NextResponse.json({ success: false, error: 'Failed to update order' }, { status: 500 })
   }
 }

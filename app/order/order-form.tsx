@@ -4,11 +4,13 @@ import { useActionState, useState } from 'react'
 import Link from 'next/link'
 import { createOrder } from '@/app/actions'
 import CookiePreview from './CookiePreview'
+import { getBasePrice } from '@/lib/pricing'
 
 const TYPE_TO_COLOR: Record<string, string> = {
-  roze:  'pink',
-  blauw: 'blue',
-  ivoor: 'white',
+  roze:   'pink',
+  blauw:  'blue',
+  ivoor:  'white',
+  custom: 'custom',
 }
 
 const COLOR_SWATCHES = [
@@ -17,13 +19,13 @@ const COLOR_SWATCHES = [
   { value: 'white', label: 'Ivoor', bg: '#F5F0E8', ring: '#C0B4B4' },
 ]
 
-function minDeadlineDate() {
+function computeMinDeadlineDate() {
   const d = new Date()
   d.setDate(d.getDate() + 3)
   return d.toISOString().split('T')[0]
 }
 
-function defaultDeadlineDate() {
+function computeDefaultDeadlineDate() {
   const d = new Date()
   d.setDate(d.getDate() + 14)
   return d.toISOString().split('T')[0]
@@ -41,15 +43,11 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
   const [line1, setLine1] = useState('')
   const [line2, setLine2] = useState('')
   const [qty, setQty] = useState(20)
+  const [minDate] = useState(computeMinDeadlineDate)
+  const [deadline, setDeadline] = useState(computeDefaultDeadlineDate)
 
   const MAX_QTY = 150
   const fillPct = ((qty - 20) / (MAX_QTY - 20)) * 100
-
-  function getBasePrice(q: number) {
-    if (q >= 100) return 2.00
-    if (q >= 50)  return 2.25
-    return 2.75
-  }
 
   return (
     <div className="min-h-full">
@@ -237,10 +235,10 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
                 type="number"
                 name="quantity"
                 min="20"
-                max="500"
+                max={MAX_QTY}
                 value={qty}
                 onChange={e => {
-                  const v = Math.max(20, Number(e.target.value))
+                  const v = Math.min(MAX_QTY, Math.max(20, Number(e.target.value)))
                   setQty(v)
                 }}
                 className="w-20 border border-bisque bg-surface px-3 py-2 font-sans text-sm text-espresso text-center focus:outline-none focus:border-primary"
@@ -273,8 +271,9 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
             <input
               type="date"
               name="deadline"
-              min={minDeadlineDate()}
-              defaultValue={defaultDeadlineDate()}
+              min={minDate}
+              value={deadline}
+              onChange={e => setDeadline(e.target.value)}
               className="w-full border border-bisque bg-surface px-4 py-3 font-sans text-sm text-espresso focus:outline-none focus:border-primary"
             />
           </div>

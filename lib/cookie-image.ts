@@ -50,19 +50,18 @@ function buildCookieSvg(color: string, line1: string, line2: string): string {
 </svg>`
 }
 
-export async function generateCookiePreviewPng(params: {
+export async function generateCookiePngBuffer(params: {
   color: string
   line1: string
   line2: string
-}): Promise<string | null> {
+}): Promise<Buffer | null> {
   try {
     const svg = buildCookieSvg(params.color, params.line1, params.line2)
     const resvg = new Resvg(svg, {
       font: { fontFiles: [FONT_PATH], loadSystemFonts: false },
       fitTo: { mode: 'width', value: 400 },
     })
-    const png = resvg.render().asPng()
-    return `data:image/png;base64,${png.toString('base64')}`
+    return Buffer.from(resvg.render().asPng())
   } catch (err) {
     console.error('[cookie-image] PNG generation failed:', err)
     return null

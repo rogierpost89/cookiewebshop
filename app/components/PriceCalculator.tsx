@@ -2,12 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-
-function getBasePrice(qty: number): number {
-  if (qty >= 100) return 2.00
-  if (qty >= 50)  return 2.25
-  return 2.75
-}
+import { getBasePrice } from '@/lib/pricing'
 
 function getTier(qty: number): string {
   if (qty >= 100) return '100+'
@@ -134,6 +129,9 @@ export default function PriceCalculator() {
 
           {personalization === 'multiple' && (
             <div className="mt-5">
+              <p className="font-sans text-[10px] text-[#8A7A82] mb-2">
+                Alleen voor prijsindicatie — je voert namen in op de bestelpagina
+              </p>
               <textarea
                 value={names}
                 onChange={e => setNames(e.target.value)}

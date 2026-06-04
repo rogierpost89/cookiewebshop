@@ -7,6 +7,9 @@ import NewOrderEmail, { newOrderSubject } from '@/emails/new-order';
 import OrderConfirmationEmail, { orderConfirmationSubject } from '@/emails/order-confirmation';
 import ReadyDateEmail, { readyDateSubject } from '@/emails/ready-date';
 
+if (!process.env.RESEND_FROM && process.env.NODE_ENV === 'production') {
+  throw new Error('RESEND_FROM environment variable is not set in production')
+}
 const FROM_ADDRESS = process.env.RESEND_FROM ?? 'onboarding@resend.dev';
 const DEFAULT_BAKER_EMAIL = process.env.BAKER_EMAIL ?? 'baker@example.com';
 const REPLY_TO = process.env.REPLY_TO_EMAIL ?? 'daphnevrd@outlook.com';

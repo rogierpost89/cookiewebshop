@@ -7,6 +7,7 @@ const COLOR_LABELS: Record<string, string> = {
   white: 'Wit',
   blue: 'Blauw',
   yellow: 'Geel',
+  custom: 'Op aanvraag',
 }
 
 export default async function ConfirmationPage({
@@ -30,7 +31,7 @@ export default async function ConfirmationPage({
     ['Bestelnummer', `#${shortId}`],
     ['Koekje', order.cookieName],
     ['Kleur', COLOR_LABELS[order.cookieColor] ?? order.cookieColor],
-    ['Aantal', `${order.quantity} dozijn`],
+    ['Aantal', `${order.quantity} stuks`],
     ['Gewenste datum', deadline],
     [
       'Bezorging',

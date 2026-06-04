@@ -4,7 +4,12 @@ import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { CreateOrderSchema } from '@/lib/types'
 import { sendNewOrderEmail, sendOrderConfirmationEmail } from '@/lib/email'
-import { generateCookiePreviewPng } from '@/lib/cookie-image'
+
+function getBaseUrl() {
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
+  return 'http://localhost:3000'
+}
 
 export async function createOrder(
   prevState: string | null,
@@ -53,28 +58,19 @@ export async function createOrder(
   })
 
   const hasPersonalization = !!(data.personalizationLine1 || data.personalizationLine2)
-  const previewPng = hasPersonalization
-    ? await generateCookiePreviewPng({
-        color: data.cookieColor === 'pink'   ? '#E0A0B8'
-             : data.cookieColor === 'blue'   ? '#8CC4D0'
-             : '#F5F0E8',
-        line1: data.personalizationLine1 ?? '',
-        line2: data.personalizationLine2 ?? '',
-      })
+  const previewUrl = hasPersonalization
+    ? `${getBaseUrl()}/api/cookie-preview/${order.id}`
     : null
 
   const [bakerResult, confirmResult] = await Promise.allSettled([
     sendNewOrderEmail(order),
-    sendOrderConfirmationEmail(order, previewPng),
+    sendOrderConfirmationEmail(order, previewUrl),
   ])
   if (bakerResult.status === 'rejected') {
-    const m = bakerResult.reason instanceof Error ? bakerResult.reason.message : String(bakerResult.reason)
-    console.error('BE>' + m.slice(0, 90))
-    console.error('BE2>' + m.slice(90, 190))
+    console.error('[email] baker notification failed:', bakerResult.reason)
   }
   if (confirmResult.status === 'rejected') {
-    const m = confirmResult.reason instanceof Error ? confirmResult.reason.message : String(confirmResult.reason)
-    console.error('CE>' + m.slice(0, 90))
+    console.error('[email] customer confirmation failed:', confirmResult.reason)
   }
 
   redirect(`/confirmation/${order.id}`)

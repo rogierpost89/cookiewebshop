@@ -6,7 +6,7 @@
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
-    "build": "npm run db:generate && next build --no-lint",
+    "build": "npm run db:generate && prisma db push --skip-generate && next build --no-lint",
     "start": "next start",
     "lint": "next lint"
   },

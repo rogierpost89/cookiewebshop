@@ -58,9 +58,12 @@ input[type="range"].slider-pink::-moz-range-thumb {
   cursor: grab;
 }
 
+html {
+  background: linear-gradient(170deg, #fce4ed 0%, #fdf4f8 30%, #f4eef8 60%, #e8f2fc 100%);
+  background-attachment: fixed;
+}
+
 body {
-  background: linear-gradient(135deg, #fce4ed 0%, #fdf4f8 30%, #f4eef8 60%, #e8f2fc 100%);
-  background-size: 100% 100%;
   color: #2A1E22;
   min-height: 100vh;
 }

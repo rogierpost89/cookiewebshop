@@ -9,6 +9,8 @@ import ReadyDateEmail, { readyDateSubject } from '@/emails/ready-date';
 
 const FROM_ADDRESS = process.env.RESEND_FROM ?? 'onboarding@resend.dev';
 const DEFAULT_BAKER_EMAIL = process.env.BAKER_EMAIL ?? 'baker@example.com';
+const REPLY_TO = process.env.REPLY_TO_EMAIL ?? 'daphnevrd@outlook.com';
+const BCC = process.env.BCC_EMAIL ?? '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY ?? '';
 
 const resend = new Resend(RESEND_API_KEY);
@@ -27,6 +29,7 @@ export async function sendNewOrderEmail(order: Order): Promise<void> {
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: DEFAULT_BAKER_EMAIL,
+    ...(BCC && { bcc: BCC }),
     subject: newOrderSubject,
     html,
   });
@@ -52,6 +55,8 @@ export async function sendOrderConfirmationEmail(
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: order.customerEmail,
+    replyTo: REPLY_TO,
+    ...(BCC && { bcc: BCC }),
     subject: orderConfirmationSubject,
     html,
   });
@@ -78,6 +83,8 @@ export async function sendReadyDateEmail(order: Order): Promise<void> {
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: order.customerEmail,
+    replyTo: REPLY_TO,
+    ...(BCC && { bcc: BCC }),
     subject: readyDateSubject,
     html,
   });

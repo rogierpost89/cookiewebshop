@@ -47,7 +47,7 @@ export default async function OrderDetailPage({
     ['Kleur',         COLOR_LABELS[order.cookieColor] ?? order.cookieColor],
     ['Aantal',        `${order.quantity} stuks`],
     ['Gewenste datum', deadline],
-    ['Bezorging',     order.deliveryMethod === 'pickup' ? 'Afhalen in Huizen' : `Bezorgen naar ${order.shippingAddress}`],
+    ['Bezorging',     order.deliveryMethod === 'pickup' ? 'Afhalen in Huizen' : `Bezorgen naar ${order.shippingAddress ?? '(geen adres)'}` ],
     ['Status',        STATUS_LABELS[order.status] ?? order.status],
     ...(order.personalizationLine1 ? [['Regel 1', order.personalizationLine1] as [string, string]] : []),
     ...(order.personalizationLine2 ? [['Regel 2', order.personalizationLine2] as [string, string]] : []),

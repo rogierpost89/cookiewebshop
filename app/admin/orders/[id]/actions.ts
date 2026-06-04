@@ -41,3 +41,9 @@ export async function updateOrderAction(
   revalidatePath('/admin')
   redirect(`/admin/orders/${orderId}`)
 }
+
+export async function deleteOrderAction(orderId: string): Promise<void> {
+  await db.order.delete({ where: { id: orderId } })
+  revalidatePath('/admin')
+  redirect('/admin')
+}

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import UpdateOrderForm from './UpdateOrderForm'
+import DeleteOrderButton from './DeleteOrderButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -103,6 +104,10 @@ export default async function OrderDetailPage({
             currentStatus={order.status}
             currentReadyDate={readyDateValue}
           />
+        </div>
+
+        <div className="pt-6 border-t border-bisque">
+          <DeleteOrderButton orderId={order.id} />
         </div>
       </main>
     </div>

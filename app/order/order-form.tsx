@@ -40,6 +40,16 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
   const [customColorNote, setCustomColorNote] = useState('')
   const [line1, setLine1] = useState('')
   const [line2, setLine2] = useState('')
+  const [qty, setQty] = useState(20)
+
+  const MAX_QTY = 150
+  const fillPct = ((qty - 20) / (MAX_QTY - 20)) * 100
+
+  function getBasePrice(q: number) {
+    if (q >= 100) return 2.00
+    if (q >= 50)  return 2.25
+    return 2.75
+  }
 
   return (
     <div className="min-h-full">
@@ -199,33 +209,74 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
             </div>
           </div>
 
-          {/* Quantity + deadline */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label className="block font-sans text-[11px] uppercase tracking-[0.2em] text-accent mb-2">
+          {/* Quantity slider + exact input */}
+          <div>
+            <div className="flex items-baseline justify-between mb-4">
+              <label className="font-sans text-[11px] uppercase tracking-[0.2em] text-accent">
                 Aantal koekjes
               </label>
+              <div className="text-right">
+                <span className="font-sans text-[10px] uppercase tracking-[0.14em] text-[#C46480]">
+                  €{getBasePrice(qty).toFixed(2)} / stuk
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 mb-3">
+              <input
+                type="range"
+                min={20}
+                max={MAX_QTY}
+                step={1}
+                value={qty}
+                onChange={e => setQty(Number(e.target.value))}
+                className="flex-1 slider-pink"
+                style={{ background: `linear-gradient(to right, #C46480 ${fillPct}%, #F0DDE5 ${fillPct}%)` }}
+              />
               <input
                 type="number"
                 name="quantity"
                 min="20"
                 max="500"
-                defaultValue="20"
-                className="w-full border border-bisque bg-surface px-4 py-3 font-sans text-sm text-espresso focus:outline-none focus:border-primary"
+                value={qty}
+                onChange={e => {
+                  const v = Math.max(20, Number(e.target.value))
+                  setQty(v)
+                }}
+                className="w-20 border border-bisque bg-surface px-3 py-2 font-sans text-sm text-espresso text-center focus:outline-none focus:border-primary"
               />
             </div>
-            <div>
-              <label className="block font-sans text-[11px] uppercase tracking-[0.2em] text-accent mb-2">
-                Gewenste datum
-              </label>
-              <input
-                type="date"
-                name="deadline"
-                min={minDeadlineDate()}
-                defaultValue={defaultDeadlineDate()}
-                className="w-full border border-bisque bg-surface px-4 py-3 font-sans text-sm text-espresso focus:outline-none focus:border-primary"
-              />
+
+            <div className="relative font-sans text-[10px] text-[#8A7A82] h-4 mb-1">
+              {([20, 50, 100, 150] as const).map(v => (
+                <span key={v} className="absolute -translate-x-1/2" style={{ left: `${((v - 20) / (MAX_QTY - 20)) * 100}%` }}>
+                  {v}
+                </span>
+              ))}
             </div>
+
+            {qty >= MAX_QTY && (
+              <p className="font-sans text-xs text-[#C46480] mt-2">
+                Meer dan 150 koekjes nodig?{' '}
+                <a href="mailto:info@daphnesbakery.nl" className="underline underline-offset-2 hover:opacity-70 transition-opacity">
+                  Stuur ons een e-mail!
+                </a>
+              </p>
+            )}
+          </div>
+
+          {/* Deadline */}
+          <div>
+            <label className="block font-sans text-[11px] uppercase tracking-[0.2em] text-accent mb-2">
+              Gewenste datum
+            </label>
+            <input
+              type="date"
+              name="deadline"
+              min={minDeadlineDate()}
+              defaultValue={defaultDeadlineDate()}
+              className="w-full border border-bisque bg-surface px-4 py-3 font-sans text-sm text-espresso focus:outline-none focus:border-primary"
+            />
           </div>
 
           {/* Delivery method */}

@@ -76,7 +76,7 @@ export default function Home() {
           <img
             src="/cookies/herocookie.png"
             alt="Fondant koekje"
-            className="w-[520px] h-[520px] object-contain animate-spin-slow"
+            className="w-full max-w-[520px] h-auto aspect-square object-contain animate-spin-slow"
             style={{ filter: "drop-shadow(0 24px 48px rgba(196,100,128,0.18))" }}
           />
         </div>

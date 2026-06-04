@@ -194,7 +194,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
           </div>
 
           {/* Quantity + deadline */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block font-sans text-[11px] uppercase tracking-[0.2em] text-accent mb-2">
                 Aantal koekjes
@@ -269,7 +269,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
             <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-accent">
               Jouw gegevens
             </p>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block font-sans text-xs text-taupe mb-2">Naam</label>
                 <input

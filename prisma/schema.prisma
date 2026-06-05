@@ -26,4 +26,7 @@ model Order {
   notes                String?
   personalizationLine1 String?
   personalizationLine2 String?
+  personalizationType  String?
+  namesInput           String?
+  decorationThemes     String?
 }

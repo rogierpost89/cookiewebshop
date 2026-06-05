@@ -32,6 +32,9 @@ export const CreateOrderSchema = z
     notes: z.string().optional(),
     personalizationLine1: z.string().max(14).optional(),
     personalizationLine2: z.string().max(22).optional(),
+    personalizationType: z.enum(["single", "multiple"]).optional().default("single"),
+    namesInput: z.string().optional(),
+    decorationThemes: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.deliveryMethod === "delivery" && !data.shippingAddress) {

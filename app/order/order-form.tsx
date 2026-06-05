@@ -19,6 +19,12 @@ const COLOR_SWATCHES = [
   { value: 'white', label: 'Ivoor', bg: '#F5F0E8', ring: '#C0B4B4' },
 ]
 
+const DECO_OPTIONS = [
+  { key: 'baby',    label: '🍼 Babythema' },
+  { key: 'animals', label: '🐾 Diertjes'  },
+  { key: 'custom',  label: '✏️ Anders'     },
+]
+
 function computeMinDeadlineDate() {
   const d = new Date()
   d.setDate(d.getDate() + 3)
@@ -45,9 +51,24 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
   const [qty, setQty] = useState(20)
   const [minDate] = useState(computeMinDeadlineDate)
   const [deadline, setDeadline] = useState(computeDefaultDeadlineDate)
+  const [personalizationType, setPersonalizationType] = useState<'single' | 'multiple'>('single')
+  const [namesInput, setNamesInput] = useState('')
+  const [decos, setDecos] = useState<Set<string>>(new Set())
+  const [customDecoNote, setCustomDecoNote] = useState('')
+
+  const toggleDeco = (key: string) => setDecos(prev => {
+    const next = new Set(prev)
+    next.has(key) ? next.delete(key) : next.add(key)
+    return next
+  })
 
   const MAX_QTY = 150
   const fillPct = ((qty - 20) / (MAX_QTY - 20)) * 100
+  const nameAdd = personalizationType === 'multiple' ? 0.50 : 0
+  const decoAdd = decos.size > 0 ? 0.25 : 0
+  const perCookie = getBasePrice(qty) + nameAdd + decoAdd
+
+  const nameCount = namesInput.split('\n').filter(n => n.trim()).length
 
   return (
     <div className="min-h-full">
@@ -87,7 +108,7 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
         <form action={formAction} className="space-y-10">
           <input type="hidden" name="cookieName" value="Fondantkoekje" />
 
-          {/* Color — controlled for live preview */}
+          {/* Color */}
           <fieldset>
             <legend className="font-sans text-[11px] uppercase tracking-[0.2em] text-accent mb-4">
               Kleur glazuur
@@ -110,7 +131,6 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
                   <span className="font-sans text-[10px] text-taupe">{swatch.label}</span>
                 </label>
               ))}
-              {/* Custom colour option */}
               <label className="cursor-pointer flex flex-col items-center gap-1.5">
                 <input
                   type="radio"
@@ -144,70 +164,151 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
             )}
           </fieldset>
 
-          {/* Personalisation + live preview */}
+          {/* Personalisation */}
           <div className="pt-2">
-            <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-accent mb-6">
+            <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-accent mb-4">
               Tekst op het koekje{' '}
               <span className="normal-case text-taupe font-sans text-xs">(optioneel)</span>
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <div className="space-y-5">
-                <div>
-                  <label className="block font-sans text-xs text-taupe mb-2">
-                    Regel 1 — grote tekst
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="personalizationLine1"
-                      value={line1}
-                      onChange={(e) => setLine1(e.target.value)}
-                      maxLength={14}
-                      placeholder="Bv. Emma"
-                      className="w-full border border-bisque bg-surface px-4 py-3 font-mono text-sm text-espresso focus:outline-none focus:border-primary"
-                      style={{ fontFamily: 'var(--font-cutive-mono), monospace' }}
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 font-sans text-[10px] text-taupe">
-                      {line1.length}/14
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label className="block font-sans text-xs text-taupe mb-2">
-                    Regel 2 — kleine tekst
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="personalizationLine2"
-                      value={line2}
-                      onChange={(e) => setLine2(e.target.value)}
-                      maxLength={22}
-                      placeholder="Bv. 4 jaar"
-                      className="w-full border border-bisque bg-surface px-4 py-3 font-mono text-sm text-espresso focus:outline-none focus:border-primary"
-                      style={{ fontFamily: 'var(--font-cutive-mono), monospace' }}
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 font-sans text-[10px] text-taupe">
-                      {line2.length}/22
-                    </span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="flex flex-col items-center gap-3">
-                <span className="font-sans text-[10px] uppercase tracking-[0.15em] text-accent">
-                  Preview
-                </span>
-                <CookiePreview
-                  colorKey={color}
-                  line1={line1}
-                  line2={line2}
-                />
-              </div>
+            {/* Personalization type toggle */}
+            <div className="flex flex-wrap gap-3 mb-6">
+              <button
+                type="button"
+                onClick={() => setPersonalizationType('single')}
+                className="px-5 py-2.5 rounded-full font-sans text-[11px] uppercase tracking-[0.14em] transition-all"
+                style={personalizationType === 'single'
+                  ? { backgroundColor: '#E0A0B8', color: 'white' }
+                  : { border: '1px solid #E0A0B8', color: '#C46480', backgroundColor: 'transparent' }
+                }
+              >
+                Één naam (inbegrepen)
+              </button>
+              <button
+                type="button"
+                onClick={() => setPersonalizationType('multiple')}
+                className="px-5 py-2.5 rounded-full font-sans text-[11px] uppercase tracking-[0.14em] transition-all"
+                style={personalizationType === 'multiple'
+                  ? { backgroundColor: '#E0A0B8', color: 'white' }
+                  : { border: '1px solid #E0A0B8', color: '#C46480', backgroundColor: 'transparent' }
+                }
+              >
+                Verschillende namen &nbsp;+€0,50
+              </button>
             </div>
+            <input type="hidden" name="personalizationType" value={personalizationType} />
+
+            {personalizationType === 'single' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div className="space-y-5">
+                  <div>
+                    <label className="block font-sans text-xs text-taupe mb-2">
+                      Regel 1 — grote tekst
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="personalizationLine1"
+                        value={line1}
+                        onChange={(e) => setLine1(e.target.value)}
+                        maxLength={14}
+                        placeholder="Bv. Emma"
+                        className="w-full border border-bisque bg-surface px-4 py-3 font-mono text-sm text-espresso focus:outline-none focus:border-primary"
+                        style={{ fontFamily: 'var(--font-cutive-mono), monospace' }}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 font-sans text-[10px] text-taupe">
+                        {line1.length}/14
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block font-sans text-xs text-taupe mb-2">
+                      Regel 2 — kleine tekst
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="personalizationLine2"
+                        value={line2}
+                        onChange={(e) => setLine2(e.target.value)}
+                        maxLength={22}
+                        placeholder="Bv. 4 jaar"
+                        className="w-full border border-bisque bg-surface px-4 py-3 font-mono text-sm text-espresso focus:outline-none focus:border-primary"
+                        style={{ fontFamily: 'var(--font-cutive-mono), monospace' }}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 font-sans text-[10px] text-taupe">
+                        {line2.length}/22
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-3">
+                  <span className="font-sans text-[10px] uppercase tracking-[0.15em] text-accent">
+                    Preview
+                  </span>
+                  <CookiePreview colorKey={color} line1={line1} line2={line2} />
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className="block font-sans text-xs text-taupe mb-2">
+                  Namen (één per regel)
+                </label>
+                <textarea
+                  name="namesInput"
+                  value={namesInput}
+                  onChange={e => setNamesInput(e.target.value)}
+                  rows={5}
+                  placeholder={"Voer namen in, één per regel\nbv. Emma\nbv. Lotte\nbv. Sophie"}
+                  className="w-full border border-bisque bg-surface px-4 py-3 font-sans text-sm text-espresso focus:outline-none focus:border-primary resize-none"
+                />
+                <p className="font-sans text-[10px] text-taupe mt-1.5">
+                  {nameCount > 0 ? `${nameCount} naam${nameCount !== 1 ? 'men' : ''} ingevoerd` : 'Nog geen namen ingevoerd'}
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Quantity slider + exact input */}
+          {/* Decoration themes */}
+          <div>
+            <div className="flex items-baseline gap-3 mb-4">
+              <p className="font-sans text-[11px] uppercase tracking-[0.2em] text-accent">
+                Thema decoratie
+              </p>
+              <span className="font-sans text-[10px] text-taupe">(optioneel) +€0,25 / stuk</span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {DECO_OPTIONS.map(({ key, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => toggleDeco(key)}
+                  className="px-5 py-2.5 rounded-full font-sans text-[11px] uppercase tracking-[0.14em] transition-all"
+                  style={decos.has(key)
+                    ? { backgroundColor: '#E0A0B8', color: 'white' }
+                    : { border: '1px solid #E0A0B8', color: '#C46480', backgroundColor: 'transparent' }
+                  }
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {decos.has('custom') && (
+              <div className="mt-4">
+                <input
+                  type="text"
+                  name="customDecoNote"
+                  value={customDecoNote}
+                  onChange={e => setCustomDecoNote(e.target.value)}
+                  placeholder="Omschrijf je gewenste decoratie…"
+                  className="w-full border border-bisque bg-surface px-4 py-3 font-sans text-sm text-espresso focus:outline-none focus:border-primary"
+                />
+              </div>
+            )}
+            <input type="hidden" name="decorationThemes" value={[...decos].join(',')} />
+          </div>
+
+          {/* Quantity slider */}
           <div>
             <div className="flex items-baseline justify-between mb-4">
               <label className="font-sans text-[11px] uppercase tracking-[0.2em] text-accent">
@@ -215,8 +316,14 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
               </label>
               <div className="text-right">
                 <span className="font-sans text-[10px] uppercase tracking-[0.14em] text-[#C46480]">
-                  €{getBasePrice(qty).toFixed(2)} / stuk
+                  €{perCookie.toFixed(2)} / stuk
                 </span>
+                <p className="font-sans text-sm font-medium text-espresso mt-0.5">
+                  Totaal: €{(qty * perCookie + (delivery === 'delivery' ? 4.5 : 0)).toFixed(2)}
+                  {delivery === 'delivery' && (
+                    <span className="font-sans text-[10px] text-taupe font-normal ml-1">(incl. bezorging)</span>
+                  )}
+                </p>
               </div>
             </div>
 

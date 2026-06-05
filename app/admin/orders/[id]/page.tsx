@@ -14,6 +14,12 @@ const COLOR_LABELS: Record<string, string> = {
   custom: 'Op aanvraag',
 }
 
+const DECO_LABELS: Record<string, string> = {
+  baby:    '🍼 Babythema',
+  animals: '🐾 Diertjes',
+  custom:  '✏️ Anders',
+}
+
 const STATUS_LABELS: Record<string, string> = {
   pending:   'In afwachting',
   confirmed: 'Bevestigd',
@@ -54,6 +60,9 @@ export default async function OrderDetailPage({
     ['Status',        STATUS_LABELS[order.status] ?? order.status],
     ...(order.personalizationLine1 ? [['Regel 1', order.personalizationLine1] as [string, string]] : []),
     ...(order.personalizationLine2 ? [['Regel 2', order.personalizationLine2] as [string, string]] : []),
+    ...(order.personalizationType === 'multiple' ? [['Personalisatie', 'Verschillende namen'] as [string, string]] : []),
+    ...(order.namesInput ? [['Namen', order.namesInput.split('\n').filter(Boolean).join(', ')] as [string, string]] : []),
+    ...(order.decorationThemes ? [['Decoratie', order.decorationThemes.split(',').filter(Boolean).map(k => DECO_LABELS[k] ?? k).join(', ')] as [string, string]] : []),
     ...(order.notes ? [['Opmerkingen', order.notes] as [string, string]] : []),
   ]
 

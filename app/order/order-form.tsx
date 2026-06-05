@@ -56,11 +56,14 @@ export default function OrderForm({ initialType = '' }: OrderFormProps) {
   const [decos, setDecos] = useState<Set<string>>(new Set())
   const [customDecoNote, setCustomDecoNote] = useState('')
 
-  const toggleDeco = (key: string) => setDecos(prev => {
-    const next = new Set(prev)
-    next.has(key) ? next.delete(key) : next.add(key)
-    return next
-  })
+  const toggleDeco = (key: string) => {
+    setDecos(prev => {
+      const next = new Set(prev)
+      next.has(key) ? next.delete(key) : next.add(key)
+      return next
+    })
+    if (key === 'custom') setCustomDecoNote('')
+  }
 
   const MAX_QTY = 150
   const fillPct = ((qty - 20) / (MAX_QTY - 20)) * 100

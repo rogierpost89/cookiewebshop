@@ -16,23 +16,28 @@ export async function createOrder(
   formData: FormData
 ): Promise<string | null> {
   const customColorNote = (formData.get('customColorNote') as string) || ''
-  const notesRaw = (formData.get('notes') as string) || ''
-  const notesWithColor = customColorNote
-    ? `Kleur aanvraag: ${customColorNote}${notesRaw ? '\n' + notesRaw : ''}`
-    : notesRaw
+  const customDecoNote  = (formData.get('customDecoNote')  as string) || ''
+  const notesRaw        = (formData.get('notes')           as string) || ''
+
+  let notes = notesRaw
+  if (customColorNote) notes = `Kleur aanvraag: ${customColorNote}${notes ? '\n' + notes : ''}`
+  if (customDecoNote)  notes = `${notes ? notes + '\n' : ''}Decoratie aanvraag: ${customDecoNote}`
 
   const raw = {
-    customerName: formData.get('customerName') as string,
-    customerEmail: formData.get('customerEmail') as string,
-    cookieName: formData.get('cookieName') as string,
-    cookieColor: formData.get('cookieColor') as string,
-    quantity: Number(formData.get('quantity')),
-    deliveryMethod: formData.get('deliveryMethod') as string,
-    deadline: formData.get('deadline') as string,
-    shippingAddress: (formData.get('shippingAddress') as string) || undefined,
-    notes: notesWithColor || undefined,
+    customerName:         formData.get('customerName')         as string,
+    customerEmail:        formData.get('customerEmail')        as string,
+    cookieName:           formData.get('cookieName')           as string,
+    cookieColor:          formData.get('cookieColor')          as string,
+    quantity:             Number(formData.get('quantity')),
+    deliveryMethod:       formData.get('deliveryMethod')       as string,
+    deadline:             formData.get('deadline')             as string,
+    shippingAddress:      (formData.get('shippingAddress')     as string) || undefined,
+    notes:                notes || undefined,
     personalizationLine1: (formData.get('personalizationLine1') as string) || undefined,
     personalizationLine2: (formData.get('personalizationLine2') as string) || undefined,
+    personalizationType:  (formData.get('personalizationType')  as string) || 'single',
+    namesInput:           (formData.get('namesInput')           as string) || undefined,
+    decorationThemes:     (formData.get('decorationThemes')     as string) || undefined,
   }
 
   const result = CreateOrderSchema.safeParse(raw)
@@ -43,21 +48,26 @@ export async function createOrder(
   const data = result.data
   const order = await db.order.create({
     data: {
-      customerName: data.customerName,
-      customerEmail: data.customerEmail,
-      cookieName: data.cookieName,
-      cookieColor: data.cookieColor,
-      quantity: data.quantity,
-      deadline: data.deadline,
-      deliveryMethod: data.deliveryMethod,
-      shippingAddress: data.shippingAddress ?? null,
-      notes: data.notes ?? null,
+      customerName:         data.customerName,
+      customerEmail:        data.customerEmail,
+      cookieName:           data.cookieName,
+      cookieColor:          data.cookieColor,
+      quantity:             data.quantity,
+      deadline:             data.deadline,
+      deliveryMethod:       data.deliveryMethod,
+      shippingAddress:      data.shippingAddress      ?? null,
+      notes:                data.notes                ?? null,
       personalizationLine1: data.personalizationLine1 ?? null,
       personalizationLine2: data.personalizationLine2 ?? null,
+      personalizationType:  data.personalizationType  ?? null,
+      namesInput:           data.namesInput            ?? null,
+      decorationThemes:     data.decorationThemes      ?? null,
     },
   })
 
-  const hasPersonalization = !!(data.personalizationLine1 || data.personalizationLine2)
+  const hasPersonalization = !!(
+    data.personalizationLine1 || data.personalizationLine2 || data.namesInput
+  )
   const previewUrl = hasPersonalization
     ? `${getBaseUrl()}/api/cookie-preview/${order.id}`
     : null
